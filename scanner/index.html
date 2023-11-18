@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Upload and Rotate</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        text-align: center;
+      }
+
+      #image-preview {
+        max-width: 20%;
+        height: auto;
+        border: 1px solid #ddd;
+        margin-top: 20px;
+      }
+
+      button {
+        background-color: #3498db;
+        color: white;
+        padding: 10px;
+        border: none;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 10px 5px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      button:hover {
+        background-color: #2980b9;
+      }
+
+      #image-input {
+        display: none;
+      }
+
+      .file-input-label {
+        background-color: #3498db;
+        color: white;
+        padding: 10px;
+        border: none;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 10px 5px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .file-input-label:hover {
+        background-color: #2980b9;
+      }
+
+      .file-input-label:active {
+        background-color: #1f618d;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="file" id="image-input" accept="image/*" />
+    <label for="image-input" class="file-input-label">Choose File</label>
+    <br />
+    <img id="image-preview" alt="Image Preview" />
+    <br />
+    <button onclick="rotateImage()">Rotate Image</button>
+    <button onclick="uploadImage()">Upload Image</button>
+
+    <script>
+      let selectedImage = null;
+      let rotationAngle = 0;
+
+      document
+        .getElementById("image-input")
+        .addEventListener("change", function (event) {
+          const fileInput = event.target;
+          const files = fileInput.files;
+
+          if (files.length > 0) {
+            selectedImage = files[0];
+            displayImagePreview();
+          }
+        });
+
+      function displayImagePreview() {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          document.getElementById("image-preview").src = e.target.result;
+          rotationAngle = 0;
+        };
+
+        reader.readAsDataURL(selectedImage);
+      }
+
+      function rotateImage() {
+        if (selectedImage) {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          const image = new Image();
+
+          image.onload = function () {
+            rotationAngle += Math.PI / 2;
+
+            const rotatedWidth =
+              Math.abs(Math.cos(rotationAngle) * image.width) +
+              Math.abs(Math.sin(rotationAngle) * image.height);
+            const rotatedHeight =
+              Math.abs(Math.sin(rotationAngle) * image.width) +
+              Math.abs(Math.cos(rotationAngle) * image.height);
+
+            canvas.width = rotatedWidth;
+            canvas.height = rotatedHeight;
+
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(rotationAngle);
+            ctx.drawImage(image, -image.width / 2, -image.height / 2);
+
+            document.getElementById("image-preview").src = canvas.toDataURL();
+          };
+
+          image.src = URL.createObjectURL(selectedImage);
+        }
+      }
+
+      function uploadImage() {
+        if (selectedImage) {
+          const formData = new FormData();
+          formData.append(
+            "image",
+            new Blob([selectedImage], { type: selectedImage.type }),
+            "image.jpg"
+          );
+
+          fetch("/upload", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.text())
+            .then((data) => {
+              console.log("Image uploaded successfully:", data);
+              // Handle the response from the server as needed.
+            })
+            .catch((error) => console.error("Error uploading image:", error));
+        } else {
+          console.warn("No image selected.");
+        }
+      }
+    </script>
+  </body>
+</html>
