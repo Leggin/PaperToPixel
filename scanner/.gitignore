@@ -1,0 +1,11 @@
+
+debug.log
+.DS_STORE
+/venv/
+/env/
+/node_modules/
+.env
+__pycache__/
+*.csv
+*.csv
+*.xlsx
