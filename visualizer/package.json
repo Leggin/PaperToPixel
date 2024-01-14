@@ -1,0 +1,19 @@
+{
+  "name": "visualizer",
+  "version": "1.0.0",
+  "description": "Visualizes scans from real world drawings in various scenarios.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node index.js"
+  },
+  "author": "Johannes Koenig, Nicolas Hilberg",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  }
+}
