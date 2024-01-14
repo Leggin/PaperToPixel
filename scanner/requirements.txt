@@ -1,0 +1,6 @@
+uvicorn==0.25.0
+fastapi==0.109.0
+python_multipart==0.0.6
+rembg==2.0.53
+streamlit==1.30.0
+pillow==10.2.0
