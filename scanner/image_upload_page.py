@@ -23,18 +23,28 @@ def main():
     if uploaded_file is not None:
         # Display the uploaded image
         image = Image.open(uploaded_file)
+
+        # make sure image has the rotation from state
+        image = rotate_image(image, 0)
+
         # Button to rotate the image
         if st.button("↺"):
             image = rotate_image(image, 90)
+
         st.image(image, caption="Uploaded Image", width=200)
         if st.button("Send"):
             # Convert Image to Bytes
             image_bytes = io.BytesIO()
+
+            if image.mode != "RGB":
+                # This is required to save the image in JPEG format
+                image = image.convert("RGB")
+
             image.save(image_bytes, format="JPEG")
             image_bytes = image_bytes.getvalue()
 
             # Prepare data for the POST request
-            files = {"file": ("rotated_image.jpg", image_bytes, "image/jpeg")}
+            files = {"file": ("image.jpg", image_bytes, "image/jpeg")}
             response = requests.post(
                 f"{config.API_BASE_URL}/upload", files=files, timeout=15
             )
