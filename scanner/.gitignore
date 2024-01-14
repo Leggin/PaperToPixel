@@ -9,3 +9,5 @@ __pycache__/
 *.csv
 *.csv
 *.xlsx
+/images/
+/.mypy_cache/
